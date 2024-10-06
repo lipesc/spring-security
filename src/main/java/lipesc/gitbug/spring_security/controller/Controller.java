@@ -2,7 +2,6 @@ package lipesc.gitbug.spring_security.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +20,7 @@ public class Controller {
 				<h1>Private route. </h1>
         <h3>Name of the auth Users in this seassion: <p><i>%s</i></p></h3>
 				""",
-        principal.getFullName()
+      principal.getFullName()
     );
   }
 
@@ -43,16 +42,13 @@ public class Controller {
   }
 
   @GetMapping("/jwt")
-  String jwt(@AuthenticationPrincipal Jwt jwt) {
-    return String.format(
-      """
-				Principal: %s\n
-				Email attribute: %s\n
-				JWT: %s\n
-				""",
-      jwt.getClaims(),
-      jwt.getClaim("email"),
-      jwt.getTokenValue()
-    );
+  String jwtFromOidcUser(@AuthenticationPrincipal OidcUser principal) {
+    if (principal == null) {
+      return "No Principal available";
+    }
+    String jwtToken = principal.getIdToken().getTokenValue();
+    return String.format("""
+        JWT: %s\n
+        """, jwtToken);
   }
 }

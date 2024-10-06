@@ -9,18 +9,21 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class Security {
+public class SecurityConfig {
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    return http.authorizeHttpRequests(authorizeConfig -> {
-      authorizeConfig.requestMatchers("/public").permitAll();
-      authorizeConfig.requestMatchers("/logout").permitAll();
-      authorizeConfig.anyRequest().authenticated();})
-    .oauth2Login(Customizer.withDefaults())
-    .oauth2ResourceServer(config -> {
-      config.jwt(Customizer.withDefaults());
-    })
-    .build();
+    return http
+        .authorizeHttpRequests(
+            authorizeConfig -> {
+              authorizeConfig.requestMatchers("/public").permitAll();
+              authorizeConfig.requestMatchers("/logout").permitAll();
+              authorizeConfig.anyRequest().authenticated();
+            })
+        .oauth2Login(Customizer.withDefaults())
+        .oauth2ResourceServer(config -> {
+          config.jwt(Customizer.withDefaults());
+        })
+        .build();
   }
 }
