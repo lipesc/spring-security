@@ -1,5 +1,7 @@
 package lipesc.gitbug.spring_security.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,7 +14,41 @@ public class Controller {
   }
 
   @GetMapping("/private")
-  String privateRoute() {
-    return "<h1> This page it's for allowed users only </h1>";
+  String privateRoute(@AuthenticationPrincipal OidcUser principal) {
+    return String.format(
+      """
+				<h1>Private route. </h1>
+        <h3>Name of the auth Users in this seassion: <p><i>%s</i></p></h3>
+				""",
+      principal.getFullName()
+    );
+  }
+
+  @GetMapping("/cookie")
+  String cookie(@AuthenticationPrincipal OidcUser principal) {
+    return String.format(
+      """
+					<h1>Oauth2 </h1>
+				<h3>Principal: %s</h3>
+				<h3>Email attribute: %s</h3>
+				<h3>Authorities: %s</h3>
+				<h3>JWT: %s</h3>
+				""",
+      principal,
+      principal.getAttribute("email"),
+      principal.getAuthorities(),
+      principal.getIdToken().getTokenValue()
+    );
+  }
+
+  @GetMapping("/jwt")
+  String jwtFromOidcUser(@AuthenticationPrincipal OidcUser principal) {
+    if (principal == null) {
+      return "ERRO:\nToken not found.";
+    }
+    String jwtToken = principal.getIdToken().getTokenValue();
+    return String.format("""
+        JWT: %s\n
+        """, jwtToken);
   }
 }
