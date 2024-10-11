@@ -44,7 +44,7 @@ public class Controller {
   @GetMapping("/jwt")
   String jwtFromOidcUser(@AuthenticationPrincipal OidcUser principal) {
     if (principal == null) {
-      return "No Principal available";
+      return "ERRO:\nToken not found.";
     }
     String jwtToken = principal.getIdToken().getTokenValue();
     return String.format("""
